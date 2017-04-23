@@ -6,7 +6,7 @@ package edu.gatech.nrotc;
   * @author Isaac Webb
   * @version 1.0
   */
-public class PRTScoreBean extends StandardBean {
+public class PRTScoreBean extends PRTStandardBean {
     private String name = "";
     private String birthday = "";
     private int age = 0;
@@ -30,7 +30,7 @@ public class PRTScoreBean extends StandardBean {
      * @param  String sex           THe PRTScoreBean's sex
      */
     public PRTScoreBean(String name, String birthday, int age, String sex, int curlUps, int pushUps, String runTime) throws RunTimeFormatException {
-        super(0, curlUps, pushUps, runTime);
+        super(0, curlUps, pushUps, runTime, "");
         this.name = name;
         this.birthday = birthday;
         this.age = age;

@@ -1,3 +1,5 @@
+package edu.gatech.nrotc;
+
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,10 +12,8 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.CsvBeanWriter;
-import edu.gatech.nrotc.PRTStandard;
-import edu.gatech.nrotc.PRTScoreBean;
 
-public class PRTTester {
+public class PRTScorer {
     private static final CellProcessor[] READING_PROCESSORS = new CellProcessor[] {
         new NotNull(),
         new NotNull(),
@@ -35,20 +35,29 @@ public class PRTTester {
         new ParseInt(),
         new NotNull(),
         new ParseInt(),
-        new ParseDouble()
+        new ParseDouble(),
+        new NotNull()
     };
 
 
     public static void main(String[] args) throws Exception {
+        if (args.length != 3) {
+            System.out.println("Usage: java -jar PRTScorer.jar <standards> <in-file> <out-file>");
+            return;
+        }
+
         // Create the PRTStandard
-        PRTStandard standard = new PRTStandard("M17-19.csv");
+        PRTStandard m1719 = new PRTStandard(args[0] + "/M17-19.csv");
+        PRTStandard m2024 = new PRTStandard(args[0] + "/M20-24.csv");
+        PRTStandard f1719 = new PRTStandard(args[0] + "/F17-19.csv");
+        PRTStandard f2024 = new PRTStandard(args[0] + "/F20-24.csv");
 
         // Read in all of the PRTScores
         ArrayList<PRTScoreBean> prtScores = new ArrayList<>();
         ICsvBeanReader beanReader = null;
         try {
             beanReader = new CsvBeanReader(new FileReader(
-                                               "testData.csv"),
+                                               args[1]),
                                            CsvPreference.STANDARD_PREFERENCE);
             final String[] header = beanReader.getHeader(true);
 
@@ -66,18 +75,30 @@ public class PRTTester {
 
         prtScores.forEach(score -> {
             try {
-                standard.scorePRT(score);
+                if (score.getSex().equalsIgnoreCase("M")) {
+                    if (score.getAge() <= 19) {
+                        m1719.scorePRT(score);
+                    } else {
+                        m2024.scorePRT(score);
+                    }
+                } else {
+                    if (score.getAge() <= 19) {
+                        f1719.scorePRT(score);
+                    } else {
+                        f2024.scorePRT(score);
+                    }
+                }
             } catch (Exception e) {
-                System.out.println("Incorrect score found");
+                System.out.printf("Score for %s is invalid.\n", score.getName());
             }
         });
 
         ICsvBeanWriter beanWriter = null;
         try {
-                beanWriter = new CsvBeanWriter(new FileWriter("scores.csv"),
+                beanWriter = new CsvBeanWriter(new FileWriter(args[2]),
                         CsvPreference.STANDARD_PREFERENCE);
 
-                final String[] header = new String[] { "name", "birthday", "age", "sex", "curlUps", "curlUpsScore", "pushUps", "pushUpsScore", "runTimeString", "runTimeScore", "averageScore" };
+                final String[] header = new String[] { "name", "birthday", "age", "sex", "curlUps", "curlUpsScore", "pushUps", "pushUpsScore", "runTimeString", "runTimeScore", "averageScore", "bracket" };
 
                 beanWriter.writeHeader(header);
 
@@ -85,11 +106,10 @@ public class PRTTester {
                         beanWriter.write(prtScore, header, WRITING_PROCESSORS);
                 }
 
-        }
-        finally {
-                if( beanWriter != null ) {
-                        beanWriter.close();
-                }
+        } finally {
+            if( beanWriter != null ) {
+                beanWriter.close();
+            }
         }
     }
 }

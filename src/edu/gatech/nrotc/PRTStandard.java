@@ -23,10 +23,11 @@ public class PRTStandard {
         new ParseInt(),
         new ParseInt(),
         new ParseInt(),
+        new NotNull(),
         new NotNull()
     };
 
-    private ArrayList<StandardBean> standards = new ArrayList<>();
+    private ArrayList<PRTStandardBean> standards = new ArrayList<>();
 
     /**
       * Creates a PRTStandard to generate scores from based on the CSV file
@@ -44,9 +45,9 @@ public class PRTStandard {
                                            CsvPreference.STANDARD_PREFERENCE);
             final String[] header = beanReader.getHeader(true);
 
-            StandardBean standard;
+            PRTStandardBean standard;
             while ((standard =
-                        beanReader.read(StandardBean.class, header,
+                        beanReader.read(PRTStandardBean.class, header,
                                         PROCESSORS)) != null) {
                 standards.add(standard);
             }
@@ -68,7 +69,7 @@ public class PRTStandard {
       * @return     The score for the number of curl ups done
       */
     public int scoreCurlUps(int reps) {
-        for (StandardBean standard : standards) {
+        for (PRTStandardBean standard : standards) {
             if (reps >= standard.getCurlUps()) {
                 return standard.getScore();
             }
@@ -85,7 +86,7 @@ public class PRTStandard {
       * @return     The score for the number of push ups done
       */
     public int scorePushUps(int reps) {
-        for (StandardBean standard : standards) {
+        for (PRTStandardBean standard : standards) {
             if (reps >= standard.getPushUps()) {
                 return standard.getScore();
             }
@@ -102,7 +103,7 @@ public class PRTStandard {
       * @return     The score for the given run time
       */
     public int scoreRunTime(int time) {
-        for (StandardBean standard : standards) {
+        for (PRTStandardBean standard : standards) {
             if (time <= standard.getRunTime()) {
                 return standard.getScore();
             }
@@ -110,6 +111,23 @@ public class PRTStandard {
 
         // Return a score of 0 if no score bracket is found
         return 0;
+    }
+
+    /**
+      * Assigns a score bracket using the PRTStandard.
+      *
+      * @param  double score          The average score
+      * @return        The bracket for the given score
+      */
+    public String scoreBracket(double score) {
+        for (PRTStandardBean standard : standards) {
+            if (score >= standard.getScore()) {
+                return standard.getBracket();
+            }
+        }
+
+        // Return a score of 0 if no score bracket is found
+        return "";
     }
 
     /**
@@ -121,5 +139,6 @@ public class PRTStandard {
         prtScoreBean.setCurlUpsScore(scoreCurlUps(prtScoreBean.getCurlUps()));
         prtScoreBean.setPushUpsScore(scorePushUps(prtScoreBean.getPushUps()));
         prtScoreBean.setRunTimeScore(scoreRunTime(prtScoreBean.getRunTime()));
+        prtScoreBean.setBracket(scoreBracket(prtScoreBean.getAverageScore()));
     }
 }
