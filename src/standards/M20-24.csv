@@ -1,0 +1,13 @@
+score,curlUps,pushUps,runTime,bracket
+100,105,87,08:30,Outstanding High
+95,103,86,09:00,Outstanding Medium
+90,98,81,09:15,Outstanding Low
+85,94,77,09:45,Excellent High
+80,90,74,10:00,Excellent Medium
+75,87,71,10:30,Excellent Low
+70,78,64,10:45,Good High
+65,66,55,11:30,Good Medium
+60,58,47,12:00,Good Low
+55,54,45,12:45,Satisfactory High
+50,50,42,13:15,Satisfactory Medium
+45,46,37,13:30,Probationary
